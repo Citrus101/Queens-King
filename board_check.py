@@ -1,4 +1,4 @@
-def board_correct(board:list, n:int) -> bool:
+def board_valid(board:list, n:int) -> bool:
     ...
     
 def check_row(board:list, n:int, row:int) -> bool:
@@ -11,7 +11,7 @@ def check_surrounding(board:list, n:int, row:int, col:int) -> bool:
     ...
 
     
-def board_correct(board:list, n:int) -> bool:
+def board_valid(board:list, n:int) -> bool:
 
     for i in range(n):
         sum = 0;
@@ -75,12 +75,4 @@ def check_surrounding(board:list, n:int, row:int, col:int) -> bool:
 
     return False;
 
-nice = [
-    1, 0, 0, 0, 0,
-    0, 0, 0, 1, 0,
-    0, 1, 0, 0, 0,
-    0, 0, 0, 0, 1,
-    0, 0, 1, 0, 0,
-]
-
-print(board_correct(nice, 5));
+# print(board_valid(nice, 5));
