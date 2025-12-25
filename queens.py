@@ -1,6 +1,17 @@
 from collections import defaultdict
 import board_check
 
+def print_board(board:list, n:int):
+    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    print(board)
+    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    print("===============================================================")
+    for i in range(n):
+        for j in range(n):
+            print(what[i * n + j], end=" ")
+        print()
+    print("===============================================================")
+
 nice = [
     1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 2, 2, 2, 2, 3, 1,
@@ -20,19 +31,25 @@ coords_dict = defaultdict(list)
 for i in range(81):
     coords_dict[nice[i]].append(i)
 
-idx_array = [0] * 4
-curr = 3
+n = 4
+idx_array = [0] * (n + 1)
+curr = n
 coords_dict = {
-    1 : [0, 1, 2],
-    2 : [3, 4, 5],
-    3 : [6, 7, 8],
+    1 : [0, 1, 2, 3],
+    2 : [4, 5, 6, 7],
+    3 : [8, 9, 10, 11],
+    4 : [12, 13, 14, 15],
 }
+
 kill_switch = False;
 count = 0
 while(1):
-    what = [0] * 9
+    what = [0] * (n * n)
     for key in coords_dict:
         what[coords_dict[key][idx_array[key]]] = 1
+
+    print_board(what, n)
+
 
     idx_array[curr] += 1
 
@@ -48,13 +65,7 @@ while(1):
         if(idx_array[0] >= len(coords_dict[1])): kill_switch = True
         if(curr == 0): break;
 
-    curr = 3 
-    print("===============================================================")
-    for i in range(3):
-        for j in range(3):
-            print(what[i * 3 + j], end=" ")
-        print()
-    print("===============================================================")
+    curr = n 
    
     count += 1;
     if(kill_switch == True): break;

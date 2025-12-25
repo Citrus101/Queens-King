@@ -10,6 +10,8 @@ def check_col(board:list, n:int, col:int) -> bool:
 def check_surrounding(board:list, n:int, row:int, col:int) -> bool:
     ...
 
+def print_board(board:list, n:int):
+    ...
     
 def board_valid(board:list, n:int) -> bool:
 
@@ -76,3 +78,5 @@ def check_surrounding(board:list, n:int, row:int, col:int) -> bool:
     return False;
 
 # print(board_valid(nice, 5));
+
+    
