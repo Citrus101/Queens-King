@@ -64,6 +64,7 @@ for i in range(1, n + 1):
 idx_array = [0] * (n + 1)
 curr = n
 kill_switch = False;
+board_coords = []
 count = 0
 # idx = 0
 
@@ -87,39 +88,77 @@ def inc_perm():
         idx_array[curr] = 0
         curr -= 1
         idx_array[curr] += 1
+        print(f"nice: {idx_array[1]} whatwhat: {len(coords_dict[1])}");
         if(idx_array[1] >= len(coords_dict[1])): kill_switch = True
+        print(kill_switch)
         if(curr == 0): break;
 
     curr = n 
 
+# def update_board(board_coords : list):
+
+#     board = [0] * (n * n)
+#     for key in board_coords:
+#         board[key] = 1
+    
+#     return board
+    
+    
+
 while(1):
     what = [0] * (n * n)
+    # board_coords;
     row  = [0] * (n + 1)
     col  = [0] * (n + 1)
     # s = time.time();
     for key in coords_dict:
+
         idx = coords_dict[key][idx_array[key]]
 
         r = int(idx / n);
         c = idx % n;
 
         while(row[r] or col[c]):
-            print_board(what, n);
+            _idx_array = idx_array.copy() 
             inc_perm();
+
+            for _key in coords_dict:
+                if(_key == key): break;
+                _idx = coords_dict[_key][_idx_array[_key]];
+                idx = coords_dict[_key][idx_array[_key]];
+                if(_idx != idx):
+                    r = int(idx / n);
+                    c = idx % n;
+                    _r = int(_idx / n);
+                    _c = _idx % n;
+                    row[_r] = 0;
+                    col[_c] = 0;
+                    row[r] = 1;
+                    col[c] = 1;
+                # print("INNER IDX: ", idx);
+                # print("INNER _IDX: ", _idx);
+
             idx = coords_dict[key][idx_array[key]]
+            # print("IDX: ", idx);
 
             r = int(idx / n);
             c = idx % n;
 
-        what[idx] = 1
+        # what[idx] = 1
+        # board_coords
         row[r] = 1;
         col[c] = 1;
         # what[coords_dict[key][idx_array[key]]] = 1
         # row[]
         # if(check_row(what, n, idx)): continue
+
+    for key in coords_dict:
+        idx = coords_dict[key][idx_array[key]];
+        what[idx] = 1;
+
     inc_perm();
 
-    # print_board(what, n)
+    print_board(what, n)
     # e = time.time();
     # nice += e - s;
 
