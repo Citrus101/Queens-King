@@ -4,18 +4,9 @@ import gc
 import time
 import cProfile
 import pstats        
-
-def inc_perm():
-    ...
-
-def check_row(board:list, n:int, row:int) -> bool:
-    sum = 0;
-    for i in range(n):
-        idx = row * n + i;
-        sum += board[idx];
-        # if(board[idx] == 1):
-    
-    return (sum == 1);
+import pyautogui
+from pynput import mouse
+from pynput.mouse import Controller, Button
 
 def print_board(board:list, n:int):
     filename = "board"
@@ -56,30 +47,111 @@ def display_board__():
 
     print("===============================================================")
 
+mouse_controller = Controller()
 
-# nice = [
-#     1, 1, 1, 1, 1, 1, 1, 1, 1,
-#     1, 1, 1, 2, 2, 2, 2, 3, 1,
-#     1, 1, 2, 2, 4, 5, 2, 3, 1,
-#     1, 6, 4, 4, 4, 4, 3, 3, 1,
-#     1, 6, 6, 4, 7, 7, 3, 3, 1,
-#     1, 6, 6, 4, 7, 7, 3, 1, 1,
-#     8, 6, 6, 4, 7, 7, 1, 1, 1,
-#     8, 8, 9, 9, 9, 9, 1, 1, 1,
-#     8, 8, 8, 9, 9, 9, 9, 1, 1,
-# ]
+# -------------------------------
+# Wait for a mouse click
+# -------------------------------
+def get_mouse_click_position():
+    print("Click anywhere on the screen...")
+
+    position = {"x": None, "y": None}
+
+    def on_click(x, y, button, pressed):
+        if pressed:
+            position["x"] = x
+            position["y"] = y
+            print(f"Clicked at ({x}, {y})")
+            return False  # Stop listener
+
+    with mouse.Listener(on_click=on_click) as listener:
+        listener.join()
+
+    return position["x"], position["y"]
+
+def click_at(x, y, button=Button.left):
+    mouse_controller.position = (x, y)
+    mouse_controller.click(button, 2)
+# -------------------------------
+# Take screenshot
+# -------------------------------
+def take_screenshot():
+    return pyautogui.screenshot()
+
+def iterate_from_point(image, start_x, start_y):
+    global n
+    global first_block_x
+    global first_block_y
+    global block_s
+    
+    width, height = image.size
+    boundary = []
+    filename = "pixels1.txt"
+    pixels = image.load()
+    prev_colour = 0;
+    curr_colour = 0;
+    for x in range(start_x , start_x + 1):
+        for y in range(start_y, height):
+            curr_colour = pixels[x, y];
+            # print(curr_colour)
+            if(curr_colour == (0, 0, 0) and curr_colour != prev_colour):
+                boundary.append([x, y])
+            prev_colour = curr_colour
+
+    print(boundary)
+    n = len(boundary) - 1
+    block_s = (boundary[1][1] - boundary[0][1])
+    print(block_s)
+    d = {}
+    count = 1;
+    first_block_x = start_x;
+    first_block_y = boundary[1][1] - block_s / 2;
+
+    # print(block_s)
+
+    for i in range(1, n + 1):
+        y = boundary[i][1] - block_s / 2;
+        for j in range(n):
+            x = start_x + block_s * (95 * j) / 100;
+            # print(f"{x}, {y}", end="\t");
+            print(pixels[x, y], end = " ")
+            # click_at(x, y)
+            if(not (pixels[x, y] in d)):
+                d[pixels[x, y]] = count;
+                count += 1
+            nice.append(d[pixels[x, y]]);
+        print()
+    print()
+        
+    for i in range(n):
+        for j in range(n):
+            print(nice[i * n + j], end=' ')
+        print()
+    print()
 
 nice = [
-    1, 2, 2, 2, 2, 2, 2, 2, 3,
-    1, 4, 4, 1, 2, 3, 5, 5, 3,
-    1, 1, 4, 1, 2, 3, 5, 3, 3,
-    6, 1, 1, 1, 2, 3, 3, 3, 6,
-    6, 6, 7, 7, 2, 6, 6, 6, 6,
-    6, 6, 6, 2, 2, 2, 6, 1, 6,
-    6, 8, 6, 6, 6, 6, 6, 8, 6,
-    6, 8, 8, 8, 8, 8, 8, 8, 9,
-    6, 6, 8, 8, 8, 8, 8, 9, 9,
+    1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 2, 2, 2, 2, 3, 1,
+    1, 1, 2, 2, 4, 5, 2, 3, 1,
+    1, 6, 4, 4, 4, 4, 3, 3, 1,
+    1, 6, 6, 4, 7, 7, 3, 3, 1,
+    1, 6, 6, 4, 7, 7, 3, 1, 1,
+    8, 6, 6, 4, 7, 7, 1, 1, 1,
+    8, 8, 9, 9, 9, 9, 1, 1, 1,
+    8, 8, 8, 9, 9, 9, 9, 1, 1,
 ]
+
+# nice = [
+#     1, 2, 2, 2, 2, 2, 2, 2, 3,
+#     1, 4, 4, 1, 2, 3, 5, 5, 3,
+#     1, 1, 4, 1, 2, 3, 5, 3, 3,
+#     6, 1, 1, 1, 2, 3, 3, 3, 6,
+#     6, 6, 7, 7, 2, 6, 6, 6, 6,
+#     6, 6, 6, 2, 2, 2, 6, 1, 6,
+#     6, 8, 6, 6, 6, 6, 6, 8, 6,
+#     6, 8, 8, 8, 8, 8, 8, 8, 9,
+#     6, 6, 8, 8, 8, 8, 8, 9, 9,
+# ]
 
 # nice = [
 #     1, 1, 2, 2, 2, 3, 3, 4,
@@ -116,27 +188,8 @@ nice = [
 #     2, 2, 2, 2, 2, 2, 2, 2,
 
 # ]
-n = 9
+nice = []
 
-coords_dict = defaultdict(list)
-# color_coords[2] = 3;
-
-for i in range(0, n*n ):
-# for i in range(1, n + 1):
-    coords_dict[nice[i]].append(i)
-    # for j in range(n):
-    #     coords_dict[i].append(n * (i - 1) + j)
-print(coords_dict)
-
-len_colours = [0] + [len(coords_dict[i]) for i in coords_dict]
-print(len_colours)
-idx_array = [0] * (n + 1)
-curr = n
-kill_switch = False;
-board_coords = []
-count = 0
-nice = 0
-# idx = 0
 
 inc_perm_state = 0
 def inc_perm(key:int, inside_loop:bool):
@@ -239,9 +292,53 @@ def check_surrounding(board:list, n:int, row:int, col:int) -> bool:
     if((row - 1) >= 0 and (col - 1) >= 0 and board[idx]): return True;
 
     return False;
+
+# nice = []
+n = 9
+
+coords_dict = defaultdict(list)
+# color_coords[2] = 3;
+
+# for i in range(0, n*n ):
+# for i in range(1, n + 1):
+    # coords_dict[nice[i]].append(i)
+    # for j in range(n):
+        # coords_dict[i].append(n * (i - 1) + j)
+# print(coords_dict)
+
+len_colours = []
+# print(len_colours)
+idx_array = [0] * (9 + 1)
+curr = n
+kill_switch = False;
+board_coords = []
+count = 0
+first_block_x = 0;
+first_block_y = 0;
+block_s = 0;
+# nice = 0
+# idx = 0
+
+
+
 def main():    
     global count
     global nice 
+    global n
+    global len_colours
+    global coords_dict
+    
+    
+    x, y = get_mouse_click_position()
+    img = take_screenshot()
+    iterate_from_point(img, x, y)
+
+    
+    for i in range(0, n * n):
+        coords_dict[nice[i]].append(i)
+
+    len_colours = [0] + [len(coords_dict[i]) for i in coords_dict]
+        
     with open("board", "w") as f:
         ...
         
@@ -335,8 +432,15 @@ def main():
             # print("enter ")
             for i in range(n):
                 for j in range(n):
+                    if(_[i*n + j] == 1):
+                        
+                        x = first_block_x + j * (95 * block_s) / 100; 
+                        y = first_block_y + i * (95 * block_s) / 100;
+                        # x = first_block_x 
+                        # y = first_block_y 
+                        click_at(x, y)
                     print(_[i * n + j], end=" ");
-                print()
+                print() 
             break;
             
     # print("ENDING FILTER")
